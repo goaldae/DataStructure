@@ -26,75 +26,69 @@ typedef struct stackNode {
 }stackNode;
 
 void push(int t) {
-
-	if (top >= 100) {
-		printf("\n    Stack overflow.");
-		return;
-	}
-
-	stack[++top] = t;
+	top++;
+	stack[top] = t;
 }
 
 void insertEdge(graphType* g, int u, int v) {
 
 	graphNode* node;
-	graphNode* node2;
+	
 
 	if (u >= g->n || v >= g->n) {
 		printf("\n 그래프에 없는 정점입니다!");
 
 		return;
 	}
-
+	
 	node = (graphNode *)malloc(sizeof(graphNode));
 	node->vertex = v;
 	node->link = g->adjList_H[u];
 	g->adjList_H[u] = node;
 
-	node2 = (graphNode *)malloc(sizeof(graphNode));
-	node2->vertex = u;
-	node2->link = g->adjList_H[v];
-	g->adjList_H[v] = node2;
+	
 }
 
 
 int pop() {
-	int item;
-	stackNode* temp = top;
-
-	if (top == NULL) {
-		printf("stack is empty!\n");
+	int temp;
+	if (top == -1) {
+		printf("df");
 		return -1;
+		
 	}
-	else {
-		item = temp->data;
-		top = temp->link;
-		free(temp);
-		return item;
-	}
+	temp = stack[top];
+	top--;
+	
+	return temp;
 }
 
 
 void DFS(graphType* g, int v) {
 	graphNode* w;
-	top = NULL;
+
 	g->visited[v] = 1;
-	printf(" %d", v);
+	
 
 	while (v != -1) {
-		
 		w = g->adjList_H[v];
-		while (w) {
-			if (!(g->visited[w->vertex])) {
+		printf(" %d", w->vertex);
+		while (w != NULL) { //아직 훑어볼게 있다면
+
+			if (g->visited[w->vertex] != 1) { //인접노드중에 방문안한게 있다면
 				push(v);
 				g->visited[w->vertex] = 1;
-				printf(" %d", w->vertex);
+				
 				v = w->vertex;
 				w = g->adjList_H[v];
+				printf(" %d", w->vertex);
 			}
-			else w = w->link;
+			else { //방문한거라면
+				w = w->link;
+				printf(" %d", w->vertex);
+			}
 		}
-		v = pop();
+		v = pop(); //훑어볼게 없으니 새로운걸 물어보러 간다
 	}
 
 }
@@ -104,16 +98,29 @@ int main(void) {
 	graphType* g;
 	g = (graphType*)malloc(sizeof(graphType));
 	g->n = 5;
-	
-	insertEdge(g, 0, 1);
-	insertEdge(g, 0, 2);
-	insertEdge(g, 1, 2);
-	insertEdge(g, 1, 3);
-	insertEdge(g, 2, 3);
-	insertEdge(g, 2, 4);
 
+	for (int i = 0; i < g->n; i++) {
+		g->adjList_H[i] = NULL;
+	}
+
+	
+	insertEdge(g, 0, 2);
+	insertEdge(g, 0, 1);
+	insertEdge(g, 1, 3);
+	insertEdge(g, 1, 2);
+	insertEdge(g, 1, 0);
+
+	insertEdge(g, 2, 4);
+	insertEdge(g, 2, 3);
+	insertEdge(g, 2, 1);
+	insertEdge(g, 2, 0);
+
+
+	insertEdge(g, 3, 2);
+	insertEdge(g, 3, 1);
+	insertEdge(g, 4, 2);
+	
 	DFS(g, 0);
 
 	return 0;
 }
-
